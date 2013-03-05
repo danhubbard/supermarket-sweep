@@ -50,7 +50,6 @@ end
 @promo1 = PromotionalItem.new('10% off over 60') do |items|
   total = 0
   items.each { |item| total += item.price }
-  puts "total #{total}"
   total > 60 ? total * 0.1 : 0
 end
 
