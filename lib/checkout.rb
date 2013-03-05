@@ -15,14 +15,14 @@ class Checkout
   
   def total(scanned, promos)
     @total = discount = 0
-    scanned.each { |item| @total += item.price }
     promos.each { |p| discount += p.apply_promo(scanned) }
+    scanned.each { |item| @total += item.price }
     puts (@total - discount).round(2)
   end
 end
 
 class Item
-  attr_reader :code, :name, :price
+  attr_accessor :code, :name, :price
     
   def initialize(code, name, price)
     @code, @name, @price = code, name, price
@@ -50,10 +50,23 @@ end
 @promo1 = PromotionalItem.new('10% off over 60') do |items|
   total = 0
   items.each { |item| total += item.price }
+  puts "total #{total}"
   total > 60 ? total * 0.1 : 0
 end
 
-@basket1 = [@i1, @i2, @i2]
+@promo2 = PromotionalItem.new('10% off over 60') do |items|
+  hearts = items.find_all{ |item| item.code == 001 }
+  if hearts.count >= 2
+    hearts.each { |heart| heart.price = 8.50 }
+  end
+  0
+end
 
-co = Checkout.new(@basket1, [@promo1])
+# Testing, testing - currently prints result to terminal
+
+@basket1 = [@i1, @i2, @i3]
+@basket2 = [@i1, @i3, @i1]
+@basket3 = [@i1, @i2, @i1, @i3]
+
+co = Checkout.new(@basket3, [@promo2, @promo1])
 co.process()
